@@ -31,6 +31,34 @@
     );
   }
 
+  // ------- smooth scroll for in-page hash links -------
+  // Fallback over CSS scroll-behavior: more reliable across engines
+  // (iOS Safari especially) and plays well with the mobile-menu close
+  // handler, which fires before this bubbles up to the document.
+  const prefersReduced = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  document.addEventListener("click", (e) => {
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const href = link.getAttribute("href");
+    if (!href || href.length < 2) return; // ignore "#" and "#!"
+    let target;
+    try {
+      target = document.querySelector(href);
+    } catch (_) {
+      return; // malformed selector
+    }
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({
+      behavior: prefersReduced ? "auto" : "smooth",
+      block: "start",
+    });
+    // preserve deep-linking without triggering default jump
+    if (history.pushState) history.pushState(null, "", href);
+  });
+
   // ------- scroll reveal (progressive enhancement) -------
   const targets = [
     ".hero__content",
