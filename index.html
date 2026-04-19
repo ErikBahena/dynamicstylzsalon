@@ -1516,9 +1516,12 @@
     <script src="app.js" defer></script>
 
     <!-- Vercel Analytics — privacy-friendly pageview + referrer tracking.
-         Auto-respects Do Not Track. Zero-config for the linked project;
-         the /_vercel/insights/* endpoints are injected by Vercel at
-         deploy time, so no-ops on local preview. -->
-    <script defer src="/_vercel/insights/script.js"></script>
+         Auto-respects Do Not Track. No build step / npm install:
+         we load @vercel/analytics from an ESM CDN and call inject().
+         Requires Web Analytics to be enabled on the Vercel project. -->
+    <script type="module">
+      import { inject } from "https://esm.sh/@vercel/analytics";
+      inject();
+    </script>
   </body>
 </html>
